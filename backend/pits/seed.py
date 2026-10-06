@@ -10,6 +10,10 @@ def seed_demo() -> None:
     worker.role = "worker"
     worker.set_password("123456")
     worker.save()
+    batcher, _ = User.objects.get_or_create(username="batcher", defaults={"role": "batcher"})
+    batcher.role = "batcher"
+    batcher.set_password("123456")
+    batcher.save()
     if Yard.objects.exists():
         return
     yard = Yard.objects.create(name="南冈鞣场", village="青皮村")

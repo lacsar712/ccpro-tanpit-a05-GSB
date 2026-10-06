@@ -39,3 +39,24 @@ class LiquorSample(models.Model):
     taken_at = models.DateTimeField(auto_now_add=True)
     ph = models.FloatField()
     operator = models.CharField(max_length=64, blank=True)
+
+
+class RatioOrder(models.Model):
+    """加脂配比单。同一坑的现行（未作废）单号唯一；作废人/时刻在作废前为空。"""
+
+    pit = models.ForeignKey(Pit, on_delete=models.CASCADE, related_name="ratio_orders")
+    order_no = models.IntegerField()
+    grease_percent = models.FloatField()
+    created_by = models.CharField(max_length=64)
+    created_at = models.DateTimeField(auto_now_add=True)
+    voided_by = models.CharField(max_length=64, blank=True, default="")
+    voided_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["pit", "order_no"],
+                condition=models.Q(voided_at__isnull=True),
+                name="uniq_active_ratio_order_no",
+            )
+        ]
