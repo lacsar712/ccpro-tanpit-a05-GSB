@@ -2,14 +2,11 @@ from pits.models import LiquorSample, Pit, User, Yard
 
 
 def seed_demo() -> None:
-    admin, _ = User.objects.get_or_create(username="admin", defaults={"role": "admin"})
-    admin.role = "admin"
-    admin.set_password("123456")
-    admin.save()
-    worker, _ = User.objects.get_or_create(username="worker", defaults={"role": "worker"})
-    worker.role = "worker"
-    worker.set_password("123456")
-    worker.save()
+    for username, role in (("admin", "admin"), ("worker", "worker"), ("mixchief", "mixchief")):
+        user, _ = User.objects.get_or_create(username=username, defaults={"role": role})
+        user.role = role
+        user.set_password("123456")
+        user.save()
     if Yard.objects.exists():
         return
     yard = Yard.objects.create(name="南冈鞣场", village="青皮村")

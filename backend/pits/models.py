@@ -39,3 +39,24 @@ class LiquorSample(models.Model):
     taken_at = models.DateTimeField(auto_now_add=True)
     ph = models.FloatField()
     operator = models.CharField(max_length=64, blank=True)
+
+
+class MixSlip(models.Model):
+    """加脂配比单：一坑一单号（从 1 起），作废后不再是现行单。"""
+
+    pit = models.ForeignKey(Pit, on_delete=models.CASCADE, related_name="slips")
+    seq = models.IntegerField()
+    fat_percent = models.FloatField()
+    created_by = models.CharField(max_length=64)
+    created_at = models.DateTimeField(auto_now_add=True)
+    voided_by = models.CharField(max_length=64, blank=True, default="")
+    voided_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["pit", "seq"],
+                condition=models.Q(voided_at__isnull=True),
+                name="uniq_active_slip_seq",
+            )
+        ]
